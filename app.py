@@ -1,4 +1,4 @@
-from app import Dash, html
+from dash import Dash, html
 
 app = Dash(__name__)
 
