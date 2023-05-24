@@ -1,3 +1,4 @@
-*pyc
+base
+*.pyc
 .DS_Store
 .env
