@@ -10,6 +10,9 @@ import io
 from io import BytesIO
 
 app = dash.Dash(__name__)
+
+app.config.suppress_callback_exceptions = True
+
 app.title = "Dashboard zur Visualisierung von Fernerkundungsdaten"
 app.layout = html.Div([
     html.H1('Multiple Leaflet Maps'),
