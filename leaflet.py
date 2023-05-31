@@ -4,12 +4,14 @@ import dash_leaflet as dl
 import datetime
 import requests
 
-
+# Initializing the Dash Application
 app = dash.Dash(__name__)
 server=app.server
 
+# Setting Up Application Configuration
 app.config.suppress_callback_exceptions = True
 
+# Defining Application Title and Layout
 app.title = "Dashboard zur Visualisierung von Fernerkundungsdaten"
 app.layout = html.Div([
     html.H1('Multiple Leaflet Maps'),
@@ -18,7 +20,7 @@ app.layout = html.Div([
             dl.TileLayer(),
             dl.WMSTileLayer(
                 url='https://services.sentinel-hub.com/ogc/wms/f9cfc572-6834-40de-b93c-72e01194d954',
-                layers='NDVI',
+                layers='NATURAL-COLOR',
                 format='image/png',
                 transparent=True
             )
@@ -28,7 +30,7 @@ app.layout = html.Div([
             dl.TileLayer(),
             dl.WMSTileLayer(
                 url='https://services.sentinel-hub.com/ogc/wms/f9cfc572-6834-40de-b93c-72e01194d954',
-                layers='NDVI',
+                layers='FALSE-COLOR',
                 format='image/png',
                 transparent=True
             )
