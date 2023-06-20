@@ -1,101 +1,105 @@
+# import packages
 import dash
-from dash import html, dcc
+from dash import Dash, html, dcc, Input, Output
 import dash_leaflet as dl
+import functions
+from datetime import date
 
 app = dash.Dash(__name__)
 server = app.server
 
-app.config.suppress_callback_exceptions = True
+innsbruck = (47.267222, 11.392778)
 
+# Open the GeoTIFF files
+band, bounds = functions.read_file(r'assets\data\01_13\2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_B01_(Raw).tiff')
+
+# Define image bounds with extent
+image_bounds = [[bounds.bottom, bounds.left],[bounds.top, bounds.right]]
+
+# Initialize the app
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
+
+# Defining app layout
 app.title = "Dashboard zur Visualisierung von Fernerkundungsdaten"
-app.layout = html.Div(
-    [
-        html.H1('Multiple Leaflet Maps'),
-        html.Div(
-            [
-                html.Label('Choose Layer:'),
-                dcc.Dropdown(
-                    id='layer-dropdown',
-                    options=[
-                        {'label': 'NDVI', 'value': 'NDVI'},
-                        {'label': 'RGB', 'value': 'NATURAL-COLOR'},
-                        {'label': 'FALSE-COLOR', 'value': 'FALSE-COLOR'}
-                    ],
-                    value='NDVI',
-                    style={"width": "200px", "margin-bottom": "10px"}
+app.layout = html.Div(children=[
+    html.Div(className='row', children=[
+        html.H1('Dashboard zur Visualisierung von Fernerkundungsdaten'),
+        html.Hr(),
+        html.P('Hier Erklärung für App')
+    ]),
+    html.Div(className='row', children=[
+        html.Div(className='six columns', children=[
+            dcc.DatePickerSingle(
+                id='my-date-picker-single-1',  # Unique ID for the first DatePickerSingle
+                min_date_allowed=date(2022, 1, 1),
+                max_date_allowed=date(2022, 12, 31),
+                initial_visible_month=date(2022, 7, 17),
+                date=date(2022, 7, 17)
+            ),
+            html.Div(style={'height': '2px'}),
+            dl.Map([
+                dl.LayersControl(
+                    [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
+                    [dl.Overlay(
+                        dl.ImageOverlay(
+                            id='timelayer1',
+                            url='assets/images/01_13/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
                 )
-            ]
-        ),
-        html.Div(
-            [
-                dl.Map(
-                    [
-                        dl.TileLayer(),
-                        dl.WMSTileLayer(
-                            id='wms-layer1',
-                            url='https://services.sentinel-hub.com/ogc/wms/f9cfc572-6834-40de-b93c-72e01194d954',
-                            layers='NDVI',
-                            format='image/png',
-                            transparent=True
-                        )
-                    ],
-                    id='map1',
-                    zoom=10,
-                    minZoom=10,
-                    dragging=True,  # Enable map panning
-                    style={'height': '400px'}
-                ),
-                html.Div(style={'height': '5px'}),  # Add spacing between maps
-                dl.Map(
-                    [
-                        dl.TileLayer(),
-                        dl.WMSTileLayer(
-                            id='wms-layer2',
-                            url='https://services.sentinel-hub.com/ogc/wms/f9cfc572-6834-40de-b93c-72e01194d954',
-                            layers='NDVI',
-                            format='image/png',
-                            transparent=True
-                        )
-                    ],
-                    id='map2',
-                    zoom=10,
-                    minZoom=10,
-                    dragging=True,  # Enable map panning
-                    style={'height': '400px'}
+            ], style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map'),
+        ]),
+        html.Div(className='six columns', children=[
+            dcc.DatePickerSingle(
+                id='my-date-picker-single-2',  # Unique ID for the second DatePickerSingle
+                min_date_allowed=date(2022, 1, 1),
+                max_date_allowed=date(2022, 12, 31),
+                initial_visible_month=date(2022, 7, 17),
+                date=date(2022, 7, 17)
+            ),
+            html.Div(style={'height': '2px'}),
+            dl.Map([
+                dl.LayersControl(
+                    [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
+                    [dl.Overlay(
+                        dl.ImageOverlay(
+                            id='timelayer2',
+                            url='assets/images/01_13/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
                 )
-            ],
-            style={"width": "40%", 'height': '50vh', "margin": "5px 5px 5px 5px", "justify-content": 'space-between'}
-        ),
-    ]
-)
+            ], style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map2'),
+        ]),
+    ]),
+])
 
-
+# Define callback for the first DatePickerSingle
 @app.callback(
-    [
-        dash.dependencies.Output('wms-layer1', 'layers'),
-        dash.dependencies.Output('wms-layer2', 'layers'),
-        dash.dependencies.Output('map1', 'center'),
-        dash.dependencies.Output('map2', 'center'),
-        dash.dependencies.Output('map1', 'zoom'),
-        dash.dependencies.Output('map2', 'zoom'),
-    ],
-    [
-        dash.dependencies.Input('layer-dropdown', 'value'),
-        dash.dependencies.Input('map1', 'center'),
-        dash.dependencies.Input('map1', 'zoom'),
-    ]
+    Output('timelayer1', 'url'),
+    [Input('my-date-picker-single-1', 'date')]
 )
-def update_maps(layer, map1_center, map1_zoom):
-    wms_layer1 = layer
-    wms_layer2 = layer
-    map1_center = map1_center
-    map2_center = map1_center
-    map2_zoom = map1_zoom
+def update_map1(date_selected):
+    # Generate the image URL based on the selected date
+    image_url = f"assets/images/{date_selected}_True_color.jpg"
+    return image_url
 
-    return wms_layer1, wms_layer2, map1_center, map2_center, map1_zoom, map2_zoom
+# Define callback for the second DatePickerSingle
+@app.callback(
+    Output('timelayer2', 'url'),
+    [Input('my-date-picker-single-2', 'date')]
+)
+def update_map2(date_selected):
+    # Generate the image URL based on the selected date
+    image_url = f"assets/images/{date_selected}_True_color.jpg"
+    return image_url
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-#123
