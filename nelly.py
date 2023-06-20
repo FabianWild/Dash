@@ -1,8 +1,6 @@
 # import packages
-from dash import Dash, html, dcc, Input, Output, callback
+from dash import Dash, html, dcc, Input, Output
 import dash_leaflet as dl
-import numpy as np
-import rasterio
 import functions
 from datetime import date
 
@@ -11,14 +9,14 @@ innsbruck = (47.267222, 11.392778)
 # Open the GeoTIFF files
 band, bounds = functions.read_file(r'assets\data\01_13\2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_B01_(Raw).tiff')
 
-# define image bounds with extent
+# Define image bounds with extent
 image_bounds = [[bounds.bottom, bounds.left],[bounds.top, bounds.right]]
 
-# initialize the app
+# Initialize the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
 
-# defining app layout
+# Defining app layout
 app.title = "Dashboard zur Visualisierung von Fernerkundungsdaten"
 app.layout = html.Div(children=[
     html.Div(className='row', children=[
@@ -29,7 +27,7 @@ app.layout = html.Div(children=[
     html.Div(className='row', children=[
         html.Div(className='six columns', children=[
             dcc.DatePickerSingle(
-                id='my-date-picker-single',
+                id='my-date-picker-single-1',  # Unique ID for the first DatePickerSingle
                 min_date_allowed=date(2022, 1, 1),
                 max_date_allowed=date(2022, 12, 31),
                 initial_visible_month=date(2022, 7, 17),
@@ -38,32 +36,22 @@ app.layout = html.Div(children=[
             html.Div(style={'height': '2px'}),
             dl.Map([
                 dl.LayersControl(
-                [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
-                [dl.Overlay(
-                    dl.ImageOverlay(
-                        id='timelayer1',
-                        url='assets/images/01_13/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_SWIR.jpg', bounds=image_bounds, opacity=1), name='SWIR'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Scene_classification_map.jpg', bounds=image_bounds, opacity=1), name='SCL'),]
-            ),
-                dl.LayerGroup(id="layer1")
-            ],
-            id='map1',
-            center=innsbruck,
-            zoom=12,
-            minZoom=10,
-            dragging=True,  # Enable map panning
-            style={'width': '700px', 'height': '500px'}
-            )
+                    [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
+                    [dl.Overlay(
+                        dl.ImageOverlay(
+                            id='timelayer1',
+                            url='assets/images/01_13/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
+                )
+            ], style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map'),
         ]),
         html.Div(className='six columns', children=[
             dcc.DatePickerSingle(
-                id='my-date-picker-single',
+                id='my-date-picker-single-2',  # Unique ID for the second DatePickerSingle
                 min_date_allowed=date(2022, 1, 1),
                 max_date_allowed=date(2022, 12, 31),
                 initial_visible_month=date(2022, 7, 17),
@@ -72,49 +60,42 @@ app.layout = html.Div(children=[
             html.Div(style={'height': '2px'}),
             dl.Map([
                 dl.LayersControl(
-                [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
-                [dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_SWIR.jpg', bounds=image_bounds, opacity=1), name='SWIR'),
-                dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Scene_classification_map.jpg', bounds=image_bounds, opacity=1), name='SCL'),]
-            ),
-                dl.LayerGroup(id="layer2")
-            ],
-            id='map2',
-            center=innsbruck,
-            zoom=12,
-            minZoom=10,
-            dragging=True,  # Enable map panning
-            style={'width': '700px', 'height': '500px'}
-            )
-        ])
-    ])
+                    [dl.BaseLayer(dl.TileLayer(), name='osm', checked=True)] +
+                    [dl.Overlay(
+                        dl.ImageOverlay(
+                            id='timelayer2',
+                            url='assets/images/01_13/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(url='assets/images/01_13/2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
+                )
+            ], style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map2'),
+        ]),
+    ]),
 ])
 
-@callback(
-    [
-        Output('layer1', 'children'),
-        Output('timelayer1', 'url')
-    ],
-    [
-        Input('map1', 'click_lat_lng'),
-        Input('my-date-picker-single', 'date')
-    ]
+# Define callback for the first DatePickerSingle
+@app.callback(
+    Output('timelayer1', 'url'),
+    [Input('my-date-picker-single-1', 'date')]
 )
+def update_map1(date_selected):
+    # Generate the image URL based on the selected date
+    image_url = f"assets/images/{date_selected}_True_color.jpg"
+    return image_url
 
-def map_click(click_lat_lng, date_value):
-    print(click_lat_lng)
-    if date_value is not None:
-        date_object = date.fromisoformat(date_value)
-        date_string = date_object.strftime('%B %d, %Y')
-        url_new = f'assets/images/01_13/{date_string}_True_color.jpg'
-        print(url_new)
-    return [dl.Marker(position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], url_new
-    
-# run the app
+# Define callback for the second DatePickerSingle
+@app.callback(
+    Output('timelayer2', 'url'),
+    [Input('my-date-picker-single-2', 'date')]
+)
+def update_map2(date_selected):
+    # Generate the image URL based on the selected date
+    image_url = f"assets/images/{date_selected}_True_color.jpg"
+    return image_url
+
+
 if __name__ == '__main__':
     app.run_server(debug=True)
