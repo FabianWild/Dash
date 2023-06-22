@@ -3,17 +3,30 @@ from dash import Dash, html, dcc, Input, Output
 import dash_leaflet as dl
 import functions
 from datetime import date, timedelta
+from pathlib import Path
+import rasterio
+import numpy as np
+import plotly.express as px
 
 app = Dash(__name__)
 server = app.server
 
 innsbruck = (47.267222, 11.392778)
 
-# Open the GeoTIFF files
-band, bounds = functions.read_file(r'assets\data\2022-01-13-00_00_2022-01-13-23_59_Sentinel-2_L2A_B01_(Raw).tiff')
+# Get GeoTIFF information
+with rasterio.open(r'assets\data\2022-01-13_B01.tiff') as fobj:
+    array = fobj.read(1)
+    bounds = fobj.bounds
+    height = fobj.height
+    width = fobj.width
 
 # Define image bounds with extent
 image_bounds = [[bounds.bottom, bounds.left],[bounds.top, bounds.right]]
+
+# Calculate Resolution
+x_res = (bounds.right-bounds.left)/width
+y_res = (bounds.top-bounds.bottom)/height
+days = ['2022-01-13', '2022-02-12', '2022-03-14', '2022-04-18', '2022-05-11', '2022-06-27', '2022-07-17', '2022-08-14', '2022-09-23', '2022-10-05', '2022-11-27', '2022-12-22']
 
 # define disabled days
 start_date = date(2022, 1, 1)
@@ -66,10 +79,13 @@ app.layout = html.Div(children=[
                      dl.Overlay(dl.ImageOverlay(id = "timelayer_NDSI", url='assets/images/2022-01-13_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
                      dl.Overlay(dl.ImageOverlay(id = "timelayer_NDVI", url='assets/images/2022-01-13_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
                      dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI", url='assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')
-                     ]
+                    ]
                 ),
                 dl.LayerGroup(id="click1")
             ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map1'),
+            html.Div(style={'height': '10px'}),
+            html.Div(id='dropdown1'),
+            html.Div(id='timeseries1')
         ]),
         html.Div(className='six columns', children=[
             dcc.DatePickerSingle(
@@ -103,17 +119,17 @@ app.layout = html.Div(children=[
 
 # Define callback for the first DatePickerSingle
 @app.callback(
-    [Output('timelayer1', 'url'),
-     Output('timelayer_falsecolor', 'url'),
-     Output('timelayer_moisture', 'url'),
-     Output('timelayer_NDSI', 'url'),
-     Output('timelayer_NDVI', 'url'),
-     Output('timelayer_NDWI', 'url'),
-     
+    [
+        Output('timelayer1', 'url'),
+        Output('timelayer_falsecolor', 'url'),
+        Output('timelayer_moisture', 'url'),
+        Output('timelayer_NDSI', 'url'),
+        Output('timelayer_NDVI', 'url'),
+        Output('timelayer_NDWI', 'url'),
     ],
-
-
-    [Input('my-date-picker-single-1', 'date')]
+    [
+        Input('my-date-picker-single-1', 'date')
+    ]
 )
 def update_map1(date_selected):
     # Generate the image URL based on the selected date
@@ -127,14 +143,17 @@ def update_map1(date_selected):
 
 # Define callback for the second DatePickerSingle
 @app.callback(
-    [Output('timelayer2', 'url'),
-     Output('timelayer_falsecolor2', 'url'),
-     Output('timelayer_moisture2', 'url'),
-     Output('timelayer_NDSI2', 'url'),
-     Output('timelayer_NDVI2', 'url'),
-     Output('timelayer_NDWI2', 'url'),
+    [
+        Output('timelayer2', 'url'),
+        Output('timelayer_falsecolor2', 'url'),
+        Output('timelayer_moisture2', 'url'),
+        Output('timelayer_NDSI2', 'url'),
+        Output('timelayer_NDVI2', 'url'),
+        Output('timelayer_NDWI2', 'url'),
     ],
-    [Input('my-date-picker-single-2', 'date')]
+    [
+        Input('my-date-picker-single-2', 'date')
+    ]
 )
 def update_map2(date_selected):
     # Generate the image URL based on the selected date
@@ -149,7 +168,10 @@ def update_map2(date_selected):
 
 # Define callback for first MapClick
 @app.callback(
-    Output('click1', 'children'),
+    [
+        Output('click1', 'children'),
+        Output('dropdown1', 'children')
+    ],
     [
         Input('map1', 'click_lat_lng'),
     ]
@@ -157,7 +179,43 @@ def update_map2(date_selected):
 
 def map_click(click_lat_lng):
     print(click_lat_lng)
-    return [dl.Marker(position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))]
+    return [dl.Marker(id='marker1', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
+                    id='layer-dropdown1',
+                    options=[
+                        {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
+                        {'label': 'NDSI', 'value': '*NDSI.tiff'},
+                        {'label': 'NDVI', 'value': '*NDVI.tiff'},
+                        {'label': 'NDWI', 'value': '*NDWI.tiff'}
+                    ],
+                    value='NDVI',
+                    style={"width": "200px", "margin-bottom": "10px"}
+                )]
+
+# Define Callback for first time series
+@app.callback(
+    Output('timeseries1', 'children'),
+    [
+        Input('layer-dropdown1', 'value'),
+        Input('marker1', 'position')
+    ]
+)
+
+def timeseries (index, lat_lng):
+    # read in all files for chosen index
+    file_path = Path('assets/data')
+    bands = []
+    for band in file_path.glob(index):
+        band_array = functions.read_file(band)
+        bands.append(band_array)
+
+    # stack bands
+    band_stack = np.dstack(bands)
+
+    # get cell for coordinates
+    y_cell = round((bounds.top-lat_lng[0])/y_res)
+    x_cell = round((lat_lng[1]-bounds.left)/x_res)
+    
+    return [dcc.Graph(figure = px.line(x=days, y=band_stack[y_cell,x_cell,:]))]
 
 
 if __name__ == '__main__':
