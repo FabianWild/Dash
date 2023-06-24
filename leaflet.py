@@ -113,6 +113,9 @@ app.layout = html.Div(children=[
                 ),
                 dl.LayerGroup(id="click2")
             ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map2'),
+            html.Div(style={'height': '10px'}),
+            html.Div(id='dropdown2'),
+            html.Div(id='timeseries2')
         ]),
     ]),
 ])
@@ -190,6 +193,29 @@ def map_click(click_lat_lng):
                     value='NDVI',
                     style={"width": "200px", "margin-bottom": "10px"}
                 )]
+# Define callback for the second MapClick
+@app.callback(
+    [
+        Output('click2', 'children'),
+        Output('dropdown2', 'children')
+    ],
+    [
+        Input('map2', 'click_lat_lng'),
+    ]
+)
+def map_click2(click_lat_lng):
+    print(click_lat_lng)
+    return [dl.Marker(id='marker2', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
+                    id='layer-dropdown2',
+                    options=[
+                        {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
+                        {'label': 'NDSI', 'value': '*NDSI.tiff'},
+                        {'label': 'NDVI', 'value': '*NDVI.tiff'},
+                        {'label': 'NDWI', 'value': '*NDWI.tiff'}
+                    ],
+                    value='NDVI',
+                    style={"width": "200px", "margin-bottom": "10px"}
+                )]
 
 # Define Callback for first time series
 @app.callback(
@@ -197,6 +223,15 @@ def map_click(click_lat_lng):
     [
         Input('layer-dropdown1', 'value'),
         Input('marker1', 'position')
+    ]
+)
+
+# Define Callback for second time series
+@app.callback(
+    Output('timeseries2', 'children'),
+    [
+        Input('layer-dropdown2', 'value'),
+        Input('marker2', 'position')
     ]
 )
 
