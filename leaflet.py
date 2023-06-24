@@ -82,7 +82,13 @@ app.layout = html.Div(children=[
                     ]
                 ),
                 dl.LayerGroup(id="click1")
-            ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map1'),
+            ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, 
+            center=innsbruck, 
+            zoom=12, 
+            id='map1', 
+            maxBounds=image_bounds,  # Restrict zoom and pan functionality to image_bounds
+            minZoom=11
+            ),
             html.Div(style={'height': '10px'}),
             html.Div(id='dropdown1'),
             html.Div(id='timeseries1')
@@ -112,7 +118,13 @@ app.layout = html.Div(children=[
                      dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI2", url='assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
                 ),
                 dl.LayerGroup(id="click2")
-            ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, center=innsbruck, zoom=12, id='map2'),
+            ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, 
+            center=innsbruck, 
+            zoom=12, 
+            id='map2',
+            maxBounds=image_bounds,  # Restrict zoom and pan functionality to image_bounds
+            minZoom=11
+            ),
             html.Div(style={'height': '10px'}),
             html.Div(id='dropdown2'),
             html.Div(id='timeseries2')
