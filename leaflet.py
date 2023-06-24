@@ -1,5 +1,5 @@
 # import packages
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, State
 import dash_leaflet as dl
 import functions
 from datetime import date, timedelta
@@ -169,7 +169,6 @@ def update_map2(date_selected):
     return rgb_url, false_url, moisture_url, NDSI_url, NDVI_url, NDWI_url
 
 
-# Define callback for first MapClick
 @app.callback(
     [
         Output('click1', 'children'),
@@ -177,23 +176,25 @@ def update_map2(date_selected):
     ],
     [
         Input('map1', 'click_lat_lng'),
+    ],
+    [
+        State('dropdown1', 'value')
     ]
 )
-
-def map_click(click_lat_lng):
+def map_click(click_lat_lng, dropdown_value):
     print(click_lat_lng)
     return [dl.Marker(id='marker1', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
-                    id='layer-dropdown1',
-                    options=[
-                        {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
-                        {'label': 'NDSI', 'value': '*NDSI.tiff'},
-                        {'label': 'NDVI', 'value': '*NDVI.tiff'},
-                        {'label': 'NDWI', 'value': '*NDWI.tiff'}
-                    ],
-                    value='NDVI',
-                    style={"width": "200px", "margin-bottom": "10px"}
-                )]
-# Define callback for the second MapClick
+        id='dropdown1',
+        options=[
+            {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
+            {'label': 'NDSI', 'value': '*NDSI.tiff'},
+            {'label': 'NDVI', 'value': '*NDVI.tiff'},
+            {'label': 'NDWI', 'value': '*NDWI.tiff'}
+        ],
+        value=dropdown_value,
+        style={"width": "200px", "margin-bottom": "10px"}
+    )]
+
 @app.callback(
     [
         Output('click2', 'children'),
@@ -201,27 +202,31 @@ def map_click(click_lat_lng):
     ],
     [
         Input('map2', 'click_lat_lng'),
+    ],
+    [
+        State('dropdown2', 'value')
     ]
 )
-def map_click2(click_lat_lng):
+def map_click2(click_lat_lng, dropdown_value):
     print(click_lat_lng)
     return [dl.Marker(id='marker2', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
-                    id='layer-dropdown2',
-                    options=[
-                        {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
-                        {'label': 'NDSI', 'value': '*NDSI.tiff'},
-                        {'label': 'NDVI', 'value': '*NDVI.tiff'},
-                        {'label': 'NDWI', 'value': '*NDWI.tiff'}
-                    ],
-                    value='NDVI',
-                    style={"width": "200px", "margin-bottom": "10px"}
-                )]
+        id='dropdown2',
+        options=[
+            {'label': 'Moisture Index', 'value': '*Moisture_index.tiff'},
+            {'label': 'NDSI', 'value': '*NDSI.tiff'},
+            {'label': 'NDVI', 'value': '*NDVI.tiff'},
+            {'label': 'NDWI', 'value': '*NDWI.tiff'}
+        ],
+        value=dropdown_value,
+        style={"width": "200px", "margin-bottom": "10px"}
+    )]
+
 
 # Define Callback for first time series
 @app.callback(
     Output('timeseries1', 'children'),
     [
-        Input('layer-dropdown1', 'value'),
+        Input('dropdown1', 'value'),
         Input('marker1', 'position')
     ]
 )
@@ -230,7 +235,7 @@ def map_click2(click_lat_lng):
 @app.callback(
     Output('timeseries2', 'children'),
     [
-        Input('layer-dropdown2', 'value'),
+        Input('dropdown2', 'value'),
         Input('marker2', 'position')
     ]
 )
