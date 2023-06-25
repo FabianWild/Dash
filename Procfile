@@ -1,1 +1,1 @@
-web: gunicorn leaflet:server
+web: gunicorn app:server
