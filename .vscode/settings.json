@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/197385e9-1696-424b-be08-757b3e46bae3/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/leaflet-dash-projekt-23",
+    "appService.deploySubpath": "."
+}
