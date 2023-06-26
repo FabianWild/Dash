@@ -194,7 +194,6 @@ def update_map2(date_selected):
     ]
 )
 def map_click(click_lat_lng, dropdown_value):
-    print(click_lat_lng)
     return [dl.Marker(id='marker1', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
         id='dropdown1',
         options=[
@@ -220,7 +219,6 @@ def map_click(click_lat_lng, dropdown_value):
     ]
 )
 def map_click2(click_lat_lng, dropdown_value):
-    print(click_lat_lng)
     return [dl.Marker(id='marker2', position=click_lat_lng, children=dl.Tooltip("({:.3f}, {:.3f})".format(*click_lat_lng)))], [html.P('Index für Zeitreihe wählen'), dcc.Dropdown(
         id='dropdown2',
         options=[
@@ -239,22 +237,11 @@ def map_click2(click_lat_lng, dropdown_value):
     Output('timeseries1', 'children'),
     [
         Input('dropdown1', 'value'),
-        Input('marker1', 'position'),
-        Input("dropdown1", "label")
+        Input('marker1', 'position')
     ]
 )
 
-# Define Callback for second time series
-@app.callback(
-    Output('timeseries2', 'children'),
-    [
-        Input('dropdown2', 'value'),
-        Input('marker2', 'position'),
-        Input("dropdown2", "label")
-    ]
-)
-
-def timeseries (index, lat_lng, label):
+def timeseries (index, lat_lng):
     # read in all files for chosen index
     file_path = Path('assets/data')
     bands = []
@@ -268,9 +255,46 @@ def timeseries (index, lat_lng, label):
     # get cell for coordinates
     y_cell = round((bounds.top-lat_lng[0])/y_res)
     x_cell = round((lat_lng[1]-bounds.left)/x_res)
-    
-    return [dcc.Graph(figure = px.line(x=days, y=band_stack[y_cell,x_cell,:], ) )]
 
+    # create figure
+    split_index = index.split('.')
+    fig = px.line(x=days, y=band_stack[y_cell,x_cell,:])
+    fig.update_xaxes(title = '')
+    fig.update_yaxes(title = f'{split_index[0][1:]}')
+    
+    return [dcc.Graph(figure = fig)]
+
+# Define Callback for second time series
+@app.callback(
+    Output('timeseries2', 'children'),
+    [
+        Input('dropdown2', 'value'),
+        Input('marker2', 'position')
+    ]
+)
+
+def timeseries (index, lat_lng):
+    # read in all files for chosen index
+    file_path = Path('assets/data')
+    bands = []
+    for band in file_path.glob(index):
+        band_array = functions.read_file(band)
+        bands.append(band_array)
+
+    # stack bands
+    band_stack = np.dstack(bands)
+
+    # get cell for coordinates
+    y_cell = round((bounds.top-lat_lng[0])/y_res)
+    x_cell = round((lat_lng[1]-bounds.left)/x_res)
+
+    # create figure
+    split_index = index.split('.')
+    fig = px.line(x=days, y=band_stack[y_cell,x_cell,:])
+    fig.update_xaxes(title = '')
+    fig.update_yaxes(title = f'{split_index[0][1:]}')
+    
+    return [dcc.Graph(figure = fig)]
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
