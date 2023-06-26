@@ -13,7 +13,7 @@ from flask import Flask, render_template
 innsbruck = (47.267222, 11.392778)
 
 # Get GeoTIFF information
-with rasterio.open(r'assets\data\2022-01-13_B01.tiff') as fobj:
+with rasterio.open(r'assets/data/2022-01-13_B01.tiff') as fobj:
     array = fobj.read(1)
     bounds = fobj.bounds
     height = fobj.height
