@@ -7,9 +7,16 @@ from pathlib import Path
 import rasterio
 import numpy as np
 import plotly.express as px
+from flask import Flask, render_template
+
 
 app = Dash(__name__)
 server = app.server
+
+
+
+
+
 
 innsbruck = (47.267222, 11.392778)
 

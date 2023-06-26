@@ -1,1 +1,2 @@
-web: gunicorn --timeout 600 app:server
+# Modify this Procfile to fit your needs
+web: gunicorn app:app
