@@ -73,12 +73,12 @@ app.layout = html.Div(children=[
                     [dl.Overlay(
                         dl.ImageOverlay(
                             id='timelayer1',
-                            url='assets/images/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_falsecolor", url='assets/images/2022-01-13_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_moisture", url='assets/images/2022-01-13_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDSI", url='assets/images/2022-01-13_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDVI", url='assets/images/2022-01-13_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI", url='assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')
+                            url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_falsecolor", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_moisture", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_Moisture_index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDSI", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDVI", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')
                     ]
                 ),
                 dl.LayerGroup(id="click1")
@@ -110,12 +110,12 @@ app.layout = html.Div(children=[
                     [dl.Overlay(
                         dl.ImageOverlay(
                             id='timelayer2',
-                            url='assets/images/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_falsecolor2", url='assets/images/2022-01-13_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_moisture2", url='assets/images/2022-01-13_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDSI2", url='assets/images/2022-01-13_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDVI2", url='assets/images/2022-01-13_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
-                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI2", url='assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
+                            url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_True_color.jpg', bounds=image_bounds, opacity=1), name='RGB'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_falsecolor2", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_False_color.jpg', bounds=image_bounds, opacity=1), name='False Color'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_moisture2", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_Moisture_Index.jpg', bounds=image_bounds, opacity=1), name='Moisture Index'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDSI2", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDSI.jpg', bounds=image_bounds, opacity=1), name='NDSI'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDVI2", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDVI.jpg', bounds=image_bounds, opacity=1), name='NDVI'),
+                     dl.Overlay(dl.ImageOverlay(id = "timelayer_NDWI2", url='https://dash-leaflet.s3.amazonaws.com/assets/images/2022-01-13_NDWI.jpg', bounds=image_bounds, opacity=1), name='NDWI')]
                 ),
                 dl.LayerGroup(id="click2")
             ], style={'width': '100%', 'height': '70vh', 'margin': "auto", "display": "block"}, 
@@ -148,12 +148,12 @@ app.layout = html.Div(children=[
 )
 def update_map1(date_selected):
     # Generate the image URL based on the selected date
-    rgb_url = f"assets/images/{date_selected}_True_color.jpg"
-    false_url = f"assets/images/{date_selected}_False_color.jpg"
-    moisture_url = f"assets/images/{date_selected}_Moisture_index.jpg"
-    NDSI_url = f"assets/images/{date_selected}_NDSI.jpg"
-    NDVI_url = f"assets/images/{date_selected}_NDVI.jpg"
-    NDWI_url = f"assets/images/{date_selected}_NDWI.jpg"
+    rgb_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_True_color.jpg"
+    false_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_False_color.jpg"
+    moisture_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_Moisture_index.jpg"
+    NDSI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDSI.jpg"
+    NDVI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDVI.jpg"
+    NDWI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDWI.jpg"
     return rgb_url, false_url, moisture_url, NDSI_url, NDVI_url, NDWI_url
 
 # Define callback for the second DatePickerSingle
@@ -172,12 +172,12 @@ def update_map1(date_selected):
 )
 def update_map2(date_selected):
     # Generate the image URL based on the selected date
-    rgb_url = f"assets/images/{date_selected}_True_color.jpg"
-    false_url = f"assets/images/{date_selected}_False_color.jpg"
-    moisture_url = f"assets/images/{date_selected}_Moisture_index.jpg"
-    NDSI_url = f"assets/images/{date_selected}_NDSI.jpg"
-    NDVI_url = f"assets/images/{date_selected}_NDVI.jpg"
-    NDWI_url = f"assets/images/{date_selected}_NDWI.jpg"
+    rgb_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_True_color.jpg"
+    false_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_False_color.jpg"
+    moisture_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_Moisture_index.jpg"
+    NDSI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDSI.jpg"
+    NDVI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDVI.jpg"
+    NDWI_url = f"https://dash-leaflet.s3.amazonaws.com/assets/images/{date_selected}_NDWI.jpg"
     return rgb_url, false_url, moisture_url, NDSI_url, NDVI_url, NDWI_url
 
 
