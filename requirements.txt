@@ -37,7 +37,7 @@ itsdangerous
 Jinja2 
 jsbeautifier==1.14.8
 kiwisolver
-llvmlite==0.38.1
+llvmlite
 loguru 
 MarkupSafe 
 matplotlib 
