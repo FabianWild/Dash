@@ -10,14 +10,6 @@ import plotly.express as px
 from flask import Flask, render_template
 
 
-app = Dash(__name__)
-server = app.server
-
-
-
-
-
-
 innsbruck = (47.267222, 11.392778)
 
 # Get GeoTIFF information
@@ -53,6 +45,7 @@ while start_date <= end_date:
 # Initialize the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
+server = app.server
 
 # Defining app layout
 app.title = "Dashboard zur Visualisierung von Fernerkundungsdaten"
@@ -60,7 +53,7 @@ app.layout = html.Div(children=[
     html.Div(className='row', children=[
         html.H1('Dashboard zur Visualisierung von Fernerkundungsdaten'),
         html.Hr(),
-        html.P('Hier Erklärung für App')
+        html.P('Vergleichen von verschiedenen Indizes für die Region Innsbruck. Auswählen von verschiedenen Layern möglich. Durch Klick auf Karte können Indizes für eine bestimmte Position geplottet werden.')
     ]),
     html.Div(className='row', children=[
         html.Div(className='six columns', children=[
@@ -246,7 +239,8 @@ def map_click2(click_lat_lng, dropdown_value):
     Output('timeseries1', 'children'),
     [
         Input('dropdown1', 'value'),
-        Input('marker1', 'position')
+        Input('marker1', 'position'),
+        Input("dropdown1", "label")
     ]
 )
 
@@ -255,11 +249,12 @@ def map_click2(click_lat_lng, dropdown_value):
     Output('timeseries2', 'children'),
     [
         Input('dropdown2', 'value'),
-        Input('marker2', 'position')
+        Input('marker2', 'position'),
+        Input("dropdown2", "label")
     ]
 )
 
-def timeseries (index, lat_lng):
+def timeseries (index, lat_lng, label):
     # read in all files for chosen index
     file_path = Path('assets/data')
     bands = []
@@ -274,8 +269,8 @@ def timeseries (index, lat_lng):
     y_cell = round((bounds.top-lat_lng[0])/y_res)
     x_cell = round((lat_lng[1]-bounds.left)/x_res)
     
-    return [dcc.Graph(figure = px.line(x=days, y=band_stack[y_cell,x_cell,:]))]
+    return [dcc.Graph(figure = px.line(x=days, y=band_stack[y_cell,x_cell,:], ) )]
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
