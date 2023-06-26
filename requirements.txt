@@ -10,6 +10,7 @@ EditorConfig==0.12.3
 Flask
 Flask-Caching
 Flask-Compress
+gdal
 gunicorn==19.0.0
 jsbeautifier==1.14.8
 more-itertools==9.1.0
