@@ -53,10 +53,13 @@ app.layout = html.Div(children=[
     html.Div(className='row', children=[
         html.H1('Dashboard zur Visualisierung von Fernerkundungsdaten'),
         html.Hr(),
-        html.P('Vergleichen von verschiedenen Indizes für die Region Innsbruck. Auswählen von verschiedenen Layern möglich. Durch Klick auf Karte können Indizes für eine bestimmte Position geplottet werden.')
+        html.H5('In diesem Dashboard können verschiedene Indizes für die Region Innsbruck verglichen werden.'),
+        html.Li('Wähle verschiedene Layer und veschiedene Monate aus, um sie miteinander zu vergleichen.'),
+        html.Li('Durch Klick auf die Karte können Indizes für eine bestimmte Position geplottet werden.')
     ]),
     html.Div(className='row', children=[
         html.Div(className='six columns', children=[
+            html.H6('Datum auswählen'),
             dcc.DatePickerSingle(
                 id='my-date-picker-single-1',  # Unique ID for the first DatePickerSingle
                 min_date_allowed=date(2022, 1, 1),
@@ -94,6 +97,7 @@ app.layout = html.Div(children=[
             html.Div(id='timeseries1')
         ]),
         html.Div(className='six columns', children=[
+            html.H6('Datum auswählen:'),
             dcc.DatePickerSingle(
                 id='my-date-picker-single-2',  # Unique ID for the second DatePickerSingle
                 min_date_allowed=date(2022, 1, 1),
